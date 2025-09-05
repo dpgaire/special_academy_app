@@ -27,7 +27,7 @@ const AppNavigator = () => {
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: colors.primary, 
+          backgroundColor: colors.background, 
         },
         headerTintColor: '#fff', 
         headerTitleStyle: {
@@ -56,21 +56,21 @@ const AppNavigator = () => {
             name="Subcategories" 
             component={SubcategoriesScreen}
             options={({ route }) => ({ 
-              title: route.params.categoryName || 'Subcategories',
+              title: route?.params?.categoryName || 'Subcategories',
             })}
           />
           <Stack.Screen 
             name="Items" 
             component={ItemsScreen}
             options={({ route }) => ({ 
-              title: route.params.subcategoryName || 'Items',
+              title: route?.params?.subcategoryName || 'Items',
             })}
           />
           <Stack.Screen 
             name="ContentWebView" 
             component={ContentWebViewScreen}
             options={({ route }) => ({ 
-              title: route.params.title || 'Content',
+              title: route?.params?.title || 'Content',
             })}
           />
         </>

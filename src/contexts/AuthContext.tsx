@@ -44,10 +44,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (credentials: LoginCredentials) => {
     try {
-      const response = await api.post('/auth/login', credentials);
-
-      // console.log('response',response)
-      
+      const response = await api.post('/auth/login', credentials);      
       const { accessToken, refreshToken, ...userData } = response.data;
       const authTokens = {
         accessToken: accessToken,

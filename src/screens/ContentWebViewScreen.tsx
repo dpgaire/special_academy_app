@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { Appbar, ActivityIndicator, useTheme } from 'react-native-paper';
+import { ActivityIndicator, useTheme } from 'react-native-paper';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { buildYouTubeEmbedUrl } from '../utils/youtubeUtils';
 import { buildPdfEmbedUrl } from '../utils/pdfUtils';
@@ -18,7 +18,6 @@ const ContentWebViewScreen = () => {
   const { contentUrl, title } = route.params;
   const [isLoading, setIsLoading] = useState(true);
   const { colors } = useTheme();
-  console.log('routes',route.params)
 
   // Determine if it's a YouTube URL
   const isYouTube = contentUrl.includes('youtube.com') || contentUrl.includes('youtu.be');
@@ -36,11 +35,6 @@ const ContentWebViewScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header>
-        <Appbar.BackAction onPress={() => {}} />
-        <Appbar.Content title={title} />
-      </Appbar.Header>
-      
       <View style={styles.webviewContainer}>
         <WebView
           source={{ uri: finalUrl }}
@@ -81,10 +75,10 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+    left: 1,
+    right: 1,
+    top: 1,
+    bottom: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
