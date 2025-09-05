@@ -8,6 +8,8 @@ import ItemsScreen from '../screens/ItemsScreen';
 import ContentWebViewScreen from '../screens/ContentWebViewScreen';
 import { ActivityIndicator, View } from 'react-native';
 import { useTheme } from 'react-native-paper'; // Import useTheme
+import SettingsScreen from '../screens/SettingsScreen';
+import HeaderRight from '../components/HeaderRight';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,11 +31,11 @@ const AppNavigator = () => {
         headerStyle: {
           backgroundColor: colors.background, 
         },
-        headerTintColor: '#fff', 
+        headerTintColor: colors.primary, 
         headerTitleStyle: {
           fontWeight: 'bold',
         },
-        headerTitleAlign: 'center', 
+        headerTitleAlign: 'left', 
       }}
     >
       {!user ? (
@@ -49,7 +51,7 @@ const AppNavigator = () => {
             component={CategoriesScreen}
             options={{ 
               title: 'Course Categories',
-              // You can override global options for specific screens if needed
+              headerRight: () => <HeaderRight />,
             }}
           />
           <Stack.Screen 
@@ -57,6 +59,7 @@ const AppNavigator = () => {
             component={SubcategoriesScreen}
             options={({ route }) => ({ 
               title: route?.params?.categoryName || 'Subcategories',
+              headerRight: () => <HeaderRight />,
             })}
           />
           <Stack.Screen 
@@ -64,6 +67,7 @@ const AppNavigator = () => {
             component={ItemsScreen}
             options={({ route }) => ({ 
               title: route?.params?.subcategoryName || 'Items',
+              headerRight: () => <HeaderRight />,
             })}
           />
           <Stack.Screen 
@@ -71,7 +75,15 @@ const AppNavigator = () => {
             component={ContentWebViewScreen}
             options={({ route }) => ({ 
               title: route?.params?.title || 'Content',
+              headerRight: () => <HeaderRight />,
             })}
+          />
+          <Stack.Screen 
+            name="Settings" 
+            component={SettingsScreen}
+            options={{ 
+              title: 'Settings',
+            }}
           />
         </>
       )}
