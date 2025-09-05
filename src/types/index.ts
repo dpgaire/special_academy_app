@@ -1,8 +1,9 @@
 export interface User {
-  id: string;
+  _id: string;
   email: string;
-  name: string;
-  avatar?: string;
+  fullName: string;
+  role: string;
+  createdAt?: string;
 }
 
 export interface AuthTokens {
@@ -45,7 +46,7 @@ export interface ContentItem {
   title: string;
   description?: string;
   type: 'pdf' | 'youtube_url';
-  contentUrl: string | undefined;
+  contentUrl: string | null;
   youtube_url?: string;
   file_path: string;
   duration?: number; // in minutes
