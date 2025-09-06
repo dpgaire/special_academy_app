@@ -46,10 +46,19 @@ export interface ContentItem {
   title: string;
   description?: string;
   type: 'pdf' | 'youtube_url';
-  contentUrl: string | null;
-  youtube_url?: string;
+  contentUrl: string;
+  youtube_url: string;
   file_path: string;
   duration?: number; // in minutes
   subcategoryId: string;
 }
+
+export type RootStackParamList = {
+  Login: undefined;
+  Categories: undefined;
+  Subcategories: { categoryName: string };
+  Items: { subcategoryName: string };
+  ContentWebView: { title: string; contentUrl: string };
+  Settings: undefined;
+};
 

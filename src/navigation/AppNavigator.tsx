@@ -10,8 +10,9 @@ import { ActivityIndicator, View } from 'react-native';
 import { useTheme } from 'react-native-paper'; // Import useTheme
 import SettingsScreen from '../screens/SettingsScreen';
 import HeaderRight from '../components/HeaderRight';
+import { RootStackParamList } from '../types';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
   const { user, isLoading } = useAuth();
@@ -58,7 +59,7 @@ const AppNavigator = () => {
             name="Subcategories" 
             component={SubcategoriesScreen}
             options={({ route }) => ({ 
-              title: route?.params?.categoryName || 'Subcategories',
+              title: route.params.categoryName || 'Subcategories',
               headerRight: () => <HeaderRight />,
             })}
           />
@@ -66,7 +67,7 @@ const AppNavigator = () => {
             name="Items" 
             component={ItemsScreen}
             options={({ route }) => ({ 
-              title: route?.params?.subcategoryName || 'Items',
+              title: route.params.subcategoryName || 'Items',
               headerRight: () => <HeaderRight />,
             })}
           />
@@ -74,7 +75,7 @@ const AppNavigator = () => {
             name="ContentWebView" 
             component={ContentWebViewScreen}
             options={({ route }) => ({ 
-              title: route?.params?.title || 'Content',
+              title: route.params.title || 'Content',
               headerRight: () => <HeaderRight />,
             })}
           />

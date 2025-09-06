@@ -58,10 +58,15 @@ const ItemsScreen = () => {
   }, [subcategoryId]);
 
   const handleItemPress = (item: ContentItem) => {
-    navigation.navigate("ContentWebView", {
-      contentUrl: item?.type === "pdf" ? item?.file_path : item?.youtube_url,
-      title: item.title,
-    });
+    const contentUrl = item.type === "pdf" ? item.file_path : item.youtube_url;
+    if (contentUrl) {
+      navigation.navigate("ContentWebView", {
+        contentUrl,
+        title: item.title,
+      });
+    } else {
+      showSnackbar("Content not available");
+    }
   };
 
   const getItemIcon = (type: string) => {

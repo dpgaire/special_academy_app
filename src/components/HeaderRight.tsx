@@ -1,14 +1,17 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useTheme } from 'react-native-paper';
+import { RootStackParamList } from '../types';
 
 const HeaderRight = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { colors } = useTheme();
 
   return (
     <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={styles.container}>
-      <Ionicons name="person-circle-outline" size={24} color="white" />
+      <Ionicons name="person-circle-outline" size={24} color={colors.primary} />
     </TouchableOpacity>
   );
 };
