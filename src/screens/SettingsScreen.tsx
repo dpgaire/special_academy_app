@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, SafeAreaView, View } from "react-native";
 import { Avatar, Button, Card, Text, Title, useTheme, Divider } from "react-native-paper";
 import { useAuth } from "../contexts/AuthContext";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -9,7 +9,7 @@ const SettingsScreen = () => {
   const { colors } = useTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {user && (
         <Card style={styles.card} mode="elevated">
           <Card.Content style={styles.cardContent}>
@@ -40,7 +40,7 @@ const SettingsScreen = () => {
       >
         Logout
       </Button>
-    </View>
+    </SafeAreaView>
   );
 };
 

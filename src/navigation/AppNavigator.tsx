@@ -67,7 +67,7 @@ const AppNavigator = () => {
             name="Items" 
             component={ItemsScreen}
             options={({ route }) => ({ 
-              title: route.params.subcategoryName || 'Items',
+              title: `${route.params.categoryName} > ${route.params.subcategoryName}`,
               headerRight: () => <HeaderRight />,
             })}
           />
@@ -75,7 +75,7 @@ const AppNavigator = () => {
             name="ContentWebView" 
             component={ContentWebViewScreen}
             options={({ route }) => ({ 
-              title: route.params.title || 'Content',
+              title: route.params.name || 'Content',
               headerRight: () => <HeaderRight />,
             })}
           />

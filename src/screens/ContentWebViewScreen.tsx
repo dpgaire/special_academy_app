@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, SafeAreaView } from "react-native";
 import { WebView } from "react-native-webview";
 import { ActivityIndicator, useTheme } from "react-native-paper";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -52,7 +52,7 @@ const ContentWebViewScreen = () => {
   const initialHost = getHost(finalUrl);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.webviewContainer}>
         <WebView
           source={{ uri: finalUrl }}
@@ -68,10 +68,8 @@ const ContentWebViewScreen = () => {
               <ActivityIndicator size="large" color={colors.primary} />
             </View>
           )}
-          // 🔒 Block external navigation
+          // 🔒 Block external navigation with YouTube support
           onShouldStartLoadWithRequest={(request) => {
-            console.log("Request URL:", request.url);
-
             // Helper to get host from URL
             const getHost = (url: string) => {
               try {
@@ -82,25 +80,85 @@ const ContentWebViewScreen = () => {
             };
 
             const requestHost = getHost(request.url);
-            const allowedHosts = ["drive.google.com", "docs.google.com"]; // your allowed domains
+            
+            // Define allowed hosts based on content type
+            let allowedHosts:Array<string> = [];
+            
+            if (isYouTube) {
+              // Allow YouTube embed domains but block main YouTube site and app links
+              allowedHosts = [
+                "www.youtube-nocookie.com",
+                "youtube-nocookie.com",
+                "www.youtube.com/embed",
+                "youtube.com/embed"
+              ];
+              
+              // Block YouTube app links and main YouTube site
+              if (request.url.includes("youtube.com") && !request.url.includes("/embed/")) {
+                return false;
+              }
+              
+              // Block YouTube app protocol
+              if (request.url.startsWith("youtube://") || request.url.startsWith("vnd.youtube://")) {
+                return false;
+              }
+              
+              // Allow embed URLs and related YouTube embed resources
+              if (request.url.includes("/embed/") || 
+                  requestHost.includes("youtube-nocookie.com") ||
+                  request.url.includes("googlevideo.com") ||
+                  request.url.includes("ytimg.com") ||
+                  request.url.includes("googleusercontent.com")) {
+                return true;
+              }
+              
+            } else if (isPdf) {
+              // PDF allowed domains
+              allowedHosts = ["drive.google.com", "docs.google.com"];
+            }
 
-            // Only allow URLs with allowed hosts
-            if (allowedHosts.some((host) => requestHost.includes(host))) {
+            // Check if the request host is in allowed hosts
+            if (allowedHosts.some((host) => 
+              requestHost.includes(host) || request.url.includes(host)
+            )) {
               return true;
             }
 
-            // Block everything else (YouTube, external links, etc.)
+            // Block everything else (external links, redirects, etc.)
             return false;
           }}
+          // Additional YouTube-specific configuration
+          injectedJavaScript={isYouTube ? `
+            // Prevent YouTube from opening external links
+            document.addEventListener('click', function(e) {
+              const target = e.target.closest('a');
+              if (target && target.href && !target.href.includes('/embed/')) {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            }, true);
+            
+            // Hide YouTube logo and related elements that might redirect
+            const style = document.createElement('style');
+            style.textContent = \`
+              .ytp-youtube-button,
+              .ytp-watermark,
+              .ytp-title-link,
+              .ytp-watch-later-button,
+              .ytp-share-button {
+                display: none !important;
+              }
+            \`;
+            document.head.appendChild(style);
+          ` : undefined}
         />
-
         {isLoading && (
           <View style={styles.loadingOverlay}>
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -128,7 +186,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    // backgroundColor: "rgba(255, 255, 1, 0.8)",
   },
 });
 

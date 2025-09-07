@@ -39,11 +39,12 @@ export interface Subcategory {
   description?: string;
   itemCount?: number;
   categoryId: string;
+  categoryName?: String;
 }
 
 export interface ContentItem {
   _id: string;
-  title: string;
+  name: string;
   description?: string;
   type: 'pdf' | 'youtube_url';
   contentUrl: string;
@@ -56,9 +57,9 @@ export interface ContentItem {
 export type RootStackParamList = {
   Login: undefined;
   Categories: undefined;
-  Subcategories: { categoryName: string };
-  Items: { subcategoryName: string };
-  ContentWebView: { title: string; contentUrl: string };
+  Subcategories: { categoryId: string; categoryName: string };
+  Items: { subcategoryId: string; subcategoryName: string; categoryName: string };
+  ContentWebView: { name: string; contentUrl: string };
   Settings: undefined;
 };
 
