@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
+import { SafeAreaView, StyleSheet, FlatList, RefreshControl, View } from "react-native";
 import {
   Card,
   Title,
@@ -72,7 +72,7 @@ const CategoriesScreen = () => {
         />
         <View style={styles.cardInfo}>
           <Title>{item.name}</Title>
-          <Text style={styles.subText}>Tap to explore</Text>
+          <Text style={styles.subText}>{item.description}</Text>
         </View>
       </Card.Content>
     </Card>
@@ -102,7 +102,7 @@ const CategoriesScreen = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
         data={categories}
         renderItem={renderCategoryItem}
@@ -123,7 +123,7 @@ const CategoriesScreen = () => {
         }
         contentContainerStyle={styles.listContent}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

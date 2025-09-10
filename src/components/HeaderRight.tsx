@@ -1,14 +1,33 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { Avatar, useTheme } from 'react-native-paper';
+import { RootStackParamList } from '../types';
+import { useAuth } from '../contexts/AuthContext';
 
 const HeaderRight = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { colors } = useTheme();
+  const { user } = useAuth();
 
   return (
-    <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={styles.container}>
-      <Ionicons name="person-circle-outline" size={24} color="white" />
+    <TouchableOpacity 
+      onPress={() => navigation.navigate('Settings')} 
+      style={styles.container}
+    >
+      {user?.image ? (
+        <Avatar.Image 
+          size={32} 
+          source={{ uri: user.image }} 
+        />
+      ) : (
+        <Ionicons 
+          name="person-circle-outline" 
+          size={32} 
+          color={colors.primary} 
+        />
+      )}
     </TouchableOpacity>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView,Platform,ScrollView } from 'react-native';
+import { SafeAreaView, View, StyleSheet, KeyboardAvoidingView,Platform,ScrollView } from 'react-native';
 import { TextInput, Button, Text, Title, useTheme } from 'react-native-paper';
 import { useAuth } from '../contexts/AuthContext';
 import { useSnackbar } from '../contexts/SnackbarContext';
@@ -30,6 +30,7 @@ const LoginScreen = () => {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
      <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -37,7 +38,7 @@ const LoginScreen = () => {
 
 
     <ScrollView 
-      contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
+      contentContainerStyle={[styles.container]}>
       <View style={styles.content}>
         <Title style={styles.title}>Welcome! Special Academy</Title>
         
@@ -85,6 +86,7 @@ const LoginScreen = () => {
       </View>
     </ScrollView>
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -110,10 +112,10 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 8,
     marginBottom: 16,
-    paddingVertical: 6,
+    paddingVertical:2,
   },
   buttonContent: {
-    paddingVertical: 6,
+    paddingVertical: 4,
   },
   footerText: {
     textAlign: 'center',

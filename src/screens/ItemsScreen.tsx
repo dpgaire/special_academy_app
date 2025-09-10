@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
+import { SafeAreaView, StyleSheet, FlatList, RefreshControl, View } from "react-native";
 import {
   Card,
   Title,
@@ -18,8 +18,8 @@ import { useSnackbar } from "../contexts/SnackbarContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type RootStackParamList = {
-  Items: { subcategoryId: string; subcategoryName: string };
-  ContentWebView: { contentUrl: string; title: string };
+  Items: { subcategoryId: string; subcategoryName: string};
+  ContentWebView: { contentUrl: string; name: string };
 };
 
 const ItemsScreen = () => {
@@ -58,10 +58,15 @@ const ItemsScreen = () => {
   }, [subcategoryId]);
 
   const handleItemPress = (item: ContentItem) => {
-    navigation.navigate("ContentWebView", {
-      contentUrl: item?.type === "pdf" ? item?.file_path : item?.youtube_url,
-      title: item.title,
-    });
+    const contentUrl = item.type === "pdf" ? item.file_path : item.youtube_url;
+    if (contentUrl) {
+      navigation.navigate("ContentWebView", {
+        contentUrl,
+        name: item.name,
+      });
+    } else {
+      showSnackbar("Content not available");
+    }
   };
 
   const getItemIcon = (type: string) => {
@@ -88,7 +93,7 @@ const ItemsScreen = () => {
           style={{ backgroundColor: colors.primary }}
         />
         <View style={styles.cardInfo}>
-          <Title>{item.title}</Title>
+          <Title>{item.name}</Title>
           <Text style={styles.subText}>{item.type.toUpperCase()}</Text>
           {item.description ? (
             <Text style={styles.desc} numberOfLines={2}>
@@ -124,7 +129,7 @@ const ItemsScreen = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
         data={items}
         renderItem={renderItem}
@@ -146,7 +151,7 @@ const ItemsScreen = () => {
         }
         contentContainerStyle={styles.listContent}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

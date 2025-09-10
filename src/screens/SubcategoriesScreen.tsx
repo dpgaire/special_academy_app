@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
+import { SafeAreaView, StyleSheet, FlatList, RefreshControl, View } from "react-native";
 import {
   Card,
   Title,
@@ -12,14 +12,11 @@ import {
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { api } from "../services/api";
-import { Subcategory } from "../types";
+import { RootStackParamList, Subcategory } from "../types";
 import SkeletonLoader from "../components/SkeletonLoader";
 import { useSnackbar } from "../contexts/SnackbarContext";
 
-type RootStackParamList = {
-  Subcategories: { categoryId: string; categoryName: string };
-  Items: { subcategoryId: string; subcategoryName: string };
-};
+
 
 const SubcategoriesScreen = () => {
   const route = useRoute<RouteProp<RootStackParamList, "Subcategories">>();
@@ -62,6 +59,7 @@ const SubcategoriesScreen = () => {
     navigation.navigate("Items", {
       subcategoryId: subcategory._id,
       subcategoryName: subcategory.name,
+      categoryName: categoryName,
     });
   };
 
@@ -79,7 +77,7 @@ const SubcategoriesScreen = () => {
         />
         <View style={styles.cardInfo}>
           <Title>{item.name}</Title>
-          <Text style={styles.subText}>Tap to view items</Text>
+          <Text style={styles.subText}>{item.description}</Text>
         </View>
       </Card.Content>
     </Card>
@@ -109,7 +107,7 @@ const SubcategoriesScreen = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
         data={subcategories}
         renderItem={renderSubcategoryItem}
@@ -131,7 +129,7 @@ const SubcategoriesScreen = () => {
         }
         contentContainerStyle={styles.listContent}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

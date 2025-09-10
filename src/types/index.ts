@@ -2,6 +2,7 @@ export interface User {
   _id: string;
   email: string;
   fullName: string;
+  image?: string;
   role: string;
   createdAt?: string;
 }
@@ -39,17 +40,27 @@ export interface Subcategory {
   description?: string;
   itemCount?: number;
   categoryId: string;
+  categoryName?: String;
 }
 
 export interface ContentItem {
   _id: string;
-  title: string;
+  name: string;
   description?: string;
   type: 'pdf' | 'youtube_url';
-  contentUrl: string | null;
-  youtube_url?: string;
+  contentUrl: string;
+  youtube_url: string;
   file_path: string;
   duration?: number; // in minutes
   subcategoryId: string;
 }
+
+export type RootStackParamList = {
+  Login: undefined;
+  Categories: undefined;
+  Subcategories: { categoryId: string; categoryName: string };
+  Items: { subcategoryId: string; subcategoryName: string; categoryName: string };
+  ContentWebView: { name: string; contentUrl: string };
+  Settings: undefined;
+};
 
