@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, StyleSheet, FlatList, RefreshControl, View } from "react-native";
+import { SafeAreaView,StyleSheet, FlatList, RefreshControl, View } from "react-native";
 import {
   Card,
   Title,
