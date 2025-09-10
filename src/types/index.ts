@@ -53,14 +53,16 @@ export interface ContentItem {
   file_path: string;
   duration?: number; // in minutes
   subcategoryId: string;
+  isFavorite?: boolean;
 }
 
 export type RootStackParamList = {
   Login: undefined;
   Categories: undefined;
   Subcategories: { categoryId: string; categoryName: string };
-  Items: { subcategoryId: string; subcategoryName: string; categoryName: string };
+  Items: { subcategoryId: string; subcategoryName: string; categoryName?: string };
   ContentWebView: { name: string; contentUrl: string };
   Settings: undefined;
+  Favorites: undefined;
 };
 

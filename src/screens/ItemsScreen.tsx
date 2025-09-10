@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, StyleSheet, FlatList, RefreshControl, View } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  FlatList,
+  RefreshControl,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import {
   Card,
   Title,
@@ -8,9 +15,11 @@ import {
   Button,
   Avatar,
   Divider,
+  IconButton,
 } from "react-native-paper";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "../services/api";
 import { ContentItem } from "../types";
 import SkeletonLoader from "../components/SkeletonLoader";
@@ -18,7 +27,7 @@ import { useSnackbar } from "../contexts/SnackbarContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type RootStackParamList = {
-  Items: { subcategoryId: string; subcategoryName: string};
+  Items: { subcategoryId: string; subcategoryName: string };
   ContentWebView: { contentUrl: string; name: string };
 };
 
@@ -29,11 +38,43 @@ const ItemsScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<string[]>([]);
 
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    loadItems();
+    loadFavorites();
+  }, [subcategoryId]);
+
+  const loadFavorites = async () => {
+    try {
+      const storedFavorites = await AsyncStorage.getItem("favorites");
+      if (storedFavorites !== null) {
+        setFavorites(JSON.parse(storedFavorites));
+      }
+    } catch (e) {
+      console.error("Failed to load favorites.", e);
+    }
+  };
+
+  const toggleFavorite = async (itemId: string) => {
+    let newFavorites = [...favorites];
+    if (favorites.includes(itemId)) {
+      newFavorites = newFavorites.filter((id) => id !== itemId);
+    } else {
+      newFavorites.push(itemId);
+    }
+    setFavorites(newFavorites);
+    try {
+      await AsyncStorage.setItem("favorites", JSON.stringify(newFavorites));
+    } catch (e) {
+      console.error("Failed to save favorite.", e);
+    }
+  };
 
   const loadItems = async (isRefresh = false) => {
     if (!isRefresh) setIsLoading(true);
@@ -52,10 +93,6 @@ const ItemsScreen = () => {
       setIsRefreshing(false);
     }
   };
-
-  useEffect(() => {
-    loadItems();
-  }, [subcategoryId]);
 
   const handleItemPress = (item: ContentItem) => {
     const contentUrl = item.type === "pdf" ? item.file_path : item.youtube_url;
@@ -80,30 +117,39 @@ const ItemsScreen = () => {
     }
   };
 
-  const renderItem = ({ item }: { item: ContentItem }) => (
-    <Card
-      style={styles.card}
-      onPress={() => handleItemPress(item)}
-      mode="elevated"
-    >
-      <Card.Content style={styles.cardContent}>
-        <Avatar.Icon
-          size={48}
-          icon={getItemIcon(item.type)}
-          style={{ backgroundColor: colors.primary }}
-        />
-        <View style={styles.cardInfo}>
-          <Title>{item.name}</Title>
-          <Text style={styles.subText}>{item.type.toUpperCase()}</Text>
-          {item.description ? (
-            <Text style={styles.desc} numberOfLines={2}>
-              {item.description}
-            </Text>
-          ) : null}
-        </View>
-      </Card.Content>
-    </Card>
-  );
+  const renderItem = ({ item }: { item: ContentItem }) => {
+    const isFavorite = favorites.includes(item._id);
+    return (
+      <Card
+        style={styles.card}
+        onPress={() => handleItemPress(item)}
+        mode="elevated"
+      >
+        <Card.Content style={styles.cardContent}>
+          <Avatar.Icon
+            size={48}
+            icon={getItemIcon(item.type)}
+            style={{ backgroundColor: colors.primary }}
+          />
+          <View style={styles.cardInfo}>
+            <Title>{item.name}</Title>
+            <Text style={styles.subText}>{item.type.toUpperCase()}</Text>
+            {item.description ? (
+              <Text style={styles.desc} numberOfLines={2}>
+                {item.description}
+              </Text>
+            ) : null}
+          </View>
+          <IconButton
+            icon={isFavorite ? "heart" : "heart-outline"}
+            iconColor={isFavorite ? colors.error : colors.onSurface}
+            size={24}
+            onPress={() => toggleFavorite(item._id)}
+          />
+        </Card.Content>
+      </Card>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -129,7 +175,9 @@ const ItemsScreen = () => {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <FlatList
         data={items}
         renderItem={renderItem}
@@ -182,10 +230,12 @@ const styles = StyleSheet.create({
   cardContent: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
+    justifyContent: "space-between",
+    padding: 16,
   },
   cardInfo: {
     flex: 1,
+    marginLeft: 16,
   },
   subText: {
     fontSize: 13,

@@ -10,6 +10,7 @@ import { ActivityIndicator, View } from "react-native";
 import { useTheme } from "react-native-paper"; // Import useTheme
 import SettingsScreen from "../screens/SettingsScreen";
 import HeaderRight from "../components/HeaderRight";
+import FavoritesScreen from "../screens/FavoritesScreen";
 import { RootStackParamList } from "../types";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -69,7 +70,7 @@ const AppNavigator = () => {
               name="Items"
               component={ItemsScreen}
               options={({ route }) => ({
-                title: `${route.params.categoryName} > ${route.params.subcategoryName}`,
+                title: route.params.subcategoryName,
                 headerRight: () => <HeaderRight />,
               })}
             />
@@ -86,6 +87,13 @@ const AppNavigator = () => {
               component={SettingsScreen}
               options={{
                 title: "Settings",
+              }}
+            />
+            <Stack.Screen
+              name="Favorites"
+              component={FavoritesScreen}
+              options={{
+                title: "Favorites",
               }}
             />
           </>
