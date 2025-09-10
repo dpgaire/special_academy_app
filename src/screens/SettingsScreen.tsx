@@ -13,11 +13,14 @@ const SettingsScreen = () => {
       {user && (
         <Card style={styles.card} mode="elevated">
           <Card.Content style={styles.cardContent}>
-            <Avatar.Text 
+            {user.image ? (
+              <Avatar.Image size={64} source={{ uri: user.image }} />
+            ) : <Avatar.Text 
               size={64} 
               label={user.fullName ? user.fullName[0] : "U"} 
               style={{ backgroundColor: colors.primary }}
-            />
+            />}
+            
             <View style={styles.info}>
               <Title>{user.fullName}</Title>
               <Text style={styles.email}>{user.email}</Text>
