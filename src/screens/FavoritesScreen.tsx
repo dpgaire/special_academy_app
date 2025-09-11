@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
   FlatList,
   View,
-  TouchableOpacity,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Card,
   Title,
@@ -139,9 +138,13 @@ const FavoritesScreen = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.centerContainer}>
+       <SafeAreaView
+      style={[styles.container]}
+    >
+      {/* <View style={styles.centerContainer}> */}
         <SkeletonLoader />
-      </View>
+      {/* </View> */}
+    </SafeAreaView>
     );
   }
 
