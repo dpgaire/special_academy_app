@@ -3,7 +3,6 @@ import {
   SafeAreaView,
   StyleSheet,
   FlatList,
-  RefreshControl,
   View,
   TouchableOpacity,
 } from "react-native";
@@ -36,7 +35,6 @@ const ItemsScreen = () => {
   const { subcategoryId, subcategoryName } = route.params;
   const [items, setItems] = useState<ContentItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
 
@@ -76,10 +74,8 @@ const ItemsScreen = () => {
     }
   };
 
-  const loadItems = async (isRefresh = false) => {
-    if (!isRefresh) setIsLoading(true);
-    else setIsRefreshing(true);
-
+  const loadItems = async () => {
+    setIsLoading(true);
     setError(null);
 
     try {
@@ -90,7 +86,6 @@ const ItemsScreen = () => {
       showSnackbar("Failed to load items");
     } finally {
       setIsLoading(false);
-      setIsRefreshing(false);
     }
   };
 
@@ -153,13 +148,14 @@ const ItemsScreen = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.centerContainer}>
-        <SkeletonLoader />
-      </View>
+      <SkeletonLoader
+        type="card"
+        backgroundColor={colors.surface}
+      />
     );
   }
 
-  if (error && !isRefreshing) {
+  if (error) {
     return (
       <View style={styles.centerContainer}>
         <Title style={{ marginBottom: 12 }}>Failed to load items</Title>
@@ -182,12 +178,6 @@ const ItemsScreen = () => {
         data={items}
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={() => loadItems(true)}
-          />
-        }
         ListHeaderComponent={
           <View style={styles.header}>
             <Title style={styles.headerTitle}>{subcategoryName}</Title>

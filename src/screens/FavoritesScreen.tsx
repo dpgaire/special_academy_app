@@ -138,13 +138,10 @@ const FavoritesScreen = () => {
 
   if (isLoading) {
     return (
-       <SafeAreaView
-      style={[styles.container]}
-    >
-      {/* <View style={styles.centerContainer}> */}
-        <SkeletonLoader />
-      {/* </View> */}
-    </SafeAreaView>
+      <SkeletonLoader
+        type="card"
+        backgroundColor={colors.surface}
+      />
     );
   }
 
