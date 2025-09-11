@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.24.0",
+    "@react-navigation/bottom-tabs": "^7.4.7",
     "@react-navigation/native": "^7.1.17",
     "@react-navigation/stack": "^7.4.7",
     "axios": "^1.11.0",
@@ -18,6 +19,7 @@
     "expo-dev-client": "^5.2.4",
     "expo-linear-gradient": "~14.1.5",
     "expo-router": "^5.1.4",
+    "expo-screen-capture": "~7.2.0",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
     "react-dom": "19.0.0",
@@ -31,8 +33,7 @@
     "react-native-web": "^0.20.0",
     "react-native-web-webview": "^1.0.2",
     "react-native-webview": "^13.15.0",
-    "react-native-youtube-iframe": "^2.4.1",
-    "expo-screen-capture": "~7.2.0"
+    "react-native-youtube-iframe": "^2.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

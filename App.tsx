@@ -1,12 +1,11 @@
-import React from 'react';
-import { Provider as PaperProvider } from 'react-native-paper';
-import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AuthProvider } from './src/contexts/AuthContext';
-import AppNavigator from './src/navigation/AppNavigator';
+import RootNavigator from './src/navigation/RootNavigator';
 import { SnackbarProvider } from './src/contexts/SnackbarContext';
 import { usePreventScreenCapture } from 'expo-screen-capture';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { PaperProvider } from 'react-native-paper';
+import { AuthProvider } from './src/contexts/AuthContext';
+import { NavigationContainer } from '@react-navigation/native';
 
 export default function App() {
   usePreventScreenCapture();
@@ -17,7 +16,7 @@ export default function App() {
           <AuthProvider>
             <NavigationContainer>
               <StatusBar style="auto" />
-              <AppNavigator />
+              <RootNavigator />
             </NavigationContainer>
           </AuthProvider>
         </SnackbarProvider>

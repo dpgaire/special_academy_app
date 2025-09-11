@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, StyleSheet, FlatList, RefreshControl, View } from "react-native";
+import { SafeAreaView, StyleSheet, FlatList, View } from "react-native";
 import {
   Card,
   Title,
@@ -23,7 +23,6 @@ const SubcategoriesScreen = () => {
   const { categoryId, categoryName } = route.params;
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const navigation =
@@ -31,10 +30,8 @@ const SubcategoriesScreen = () => {
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
 
-  const loadSubcategories = async (isRefresh = false) => {
-    if (!isRefresh) setIsLoading(true);
-    else setIsRefreshing(true);
-
+  const loadSubcategories = async () => {
+    setIsLoading(true);
     setError(null);
 
     try {
@@ -47,7 +44,6 @@ const SubcategoriesScreen = () => {
       showSnackbar("Failed to load subcategories");
     } finally {
       setIsLoading(false);
-      setIsRefreshing(false);
     }
   };
 
@@ -85,13 +81,14 @@ const SubcategoriesScreen = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.centerContainer}>
-        <SkeletonLoader />
-      </View>
+      <SkeletonLoader
+        type="card"
+        backgroundColor={colors.surface}
+      />
     );
   }
 
-  if (error && !isRefreshing) {
+  if (error) {
     return (
       <View style={styles.centerContainer}>
         <Title style={{ marginBottom: 12 }}>Failed to load subcategories</Title>
@@ -112,12 +109,6 @@ const SubcategoriesScreen = () => {
         data={subcategories}
         renderItem={renderSubcategoryItem}
         keyExtractor={(item) => item._id}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={() => loadSubcategories(true)}
-          />
-        }
         ListHeaderComponent={
           <View style={styles.header}>
             <Title style={styles.headerTitle}>{categoryName}</Title>

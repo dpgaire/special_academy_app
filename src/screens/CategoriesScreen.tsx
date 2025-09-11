@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, StyleSheet, FlatList, RefreshControl, View } from "react-native";
+import { SafeAreaView,StyleSheet, FlatList, View } from "react-native";
 import {
   Card,
   Title,
@@ -18,16 +18,14 @@ import { useSnackbar } from "../contexts/SnackbarContext";
 const CategoriesScreen = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
 
-  const loadCategories = async (isRefresh = false) => {
-    if (!isRefresh) setIsLoading(true);
-    else setIsRefreshing(true);
+  const loadCategories = async () => {
+    setIsLoading(true);
     setError(null);
 
     try {
@@ -39,7 +37,6 @@ const CategoriesScreen = () => {
       showSnackbar("Failed to load categories");
     } finally {
       setIsLoading(false);
-      setIsRefreshing(false);
     }
   };
 
@@ -80,13 +77,14 @@ const CategoriesScreen = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.centerContainer}>
-        <SkeletonLoader />
-      </View>
+      <SkeletonLoader
+        type="card"
+        backgroundColor={colors.surface}
+      />
     );
   }
 
-  if (error && !isRefreshing) {
+  if (error) {
     return (
       <View style={styles.centerContainer}>
         <Title style={{ marginBottom: 12 }}>Failed to load categories</Title>
@@ -107,12 +105,6 @@ const CategoriesScreen = () => {
         data={categories}
         renderItem={renderCategoryItem}
         keyExtractor={(item) => item._id}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={() => loadCategories(true)}
-          />
-        }
         ListHeaderComponent={
           <View style={styles.header}>
             <Title style={styles.headerTitle}>Browse Categories</Title>

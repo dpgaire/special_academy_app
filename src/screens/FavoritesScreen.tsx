@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
   FlatList,
   View,
-  TouchableOpacity,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Card,
   Title,
@@ -16,76 +15,70 @@ import {
   Divider,
   IconButton,
 } from "react-native-paper";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "../services/api";
 import { ContentItem } from "../types";
 import SkeletonLoader from "../components/SkeletonLoader";
 import { useSnackbar } from "../contexts/SnackbarContext";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type RootStackParamList = {
-  Items: { subcategoryId: string; subcategoryName: string };
+  Favorites: undefined;
   ContentWebView: { contentUrl: string; name: string };
 };
 
-const ItemsScreen = () => {
-  const route = useRoute<RouteProp<RootStackParamList, "Items">>();
-  const { subcategoryId, subcategoryName } = route.params;
+const FavoritesScreen = () => {
   const [items, setItems] = useState<ContentItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [favorites, setFavorites] = useState<string[]>([]);
 
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
 
-  useEffect(() => {
-    loadItems();
-    loadFavorites();
-  }, [subcategoryId]);
-
-  const loadFavorites = async () => {
+  const loadItems = useCallback(async () => {
+    setIsLoading(true);
     try {
       const storedFavorites = await AsyncStorage.getItem("favorites");
       if (storedFavorites !== null) {
-        setFavorites(JSON.parse(storedFavorites));
+        const favorites = JSON.parse(storedFavorites);
+        if (favorites.length > 0) {
+          const itemPromises = favorites.map((itemId: string) =>
+            api.get(`/items/${itemId}`)
+          );
+          const responses = await Promise.all(itemPromises);
+          const favoriteItems = responses.map((response) => response.data);
+          setItems(favoriteItems);
+        } else {
+          setItems([]);
+        }
+      } else {
+        setItems([]);
       }
-    } catch (e) {
-      console.error("Failed to load favorites.", e);
-    }
-  };
-
-  const toggleFavorite = async (itemId: string) => {
-    let newFavorites = [...favorites];
-    if (favorites.includes(itemId)) {
-      newFavorites = newFavorites.filter((id) => id !== itemId);
-    } else {
-      newFavorites.push(itemId);
-    }
-    setFavorites(newFavorites);
-    try {
-      await AsyncStorage.setItem("favorites", JSON.stringify(newFavorites));
-    } catch (e) {
-      console.error("Failed to save favorite.", e);
-    }
-  };
-
-  const loadItems = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await api.get(`/items?subcategoryId=${subcategoryId}`);
-      setItems(response.data);
     } catch (err: any) {
-      setError(err.message || "Failed to load items");
-      showSnackbar("Failed to load items");
+      showSnackbar("Failed to load favorite items");
+      setItems([]);
     } finally {
       setIsLoading(false);
+    }
+  }, [showSnackbar]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadItems();
+    }, [loadItems])
+  );
+
+  const toggleFavorite = async (itemId: string) => {
+    const newItems = items.filter((item) => item._id !== itemId);
+    setItems(newItems);
+
+    const storedFavorites = await AsyncStorage.getItem("favorites");
+    if (storedFavorites !== null) {
+      const favorites = JSON.parse(storedFavorites);
+      const newFavorites = favorites.filter((id: string) => id !== itemId);
+      await AsyncStorage.setItem("favorites", JSON.stringify(newFavorites));
     }
   };
 
@@ -112,39 +105,36 @@ const ItemsScreen = () => {
     }
   };
 
-  const renderItem = ({ item }: { item: ContentItem }) => {
-    const isFavorite = favorites.includes(item._id);
-    return (
-      <Card
-        style={styles.card}
-        onPress={() => handleItemPress(item)}
-        mode="elevated"
-      >
-        <Card.Content style={styles.cardContent}>
-          <Avatar.Icon
-            size={48}
-            icon={getItemIcon(item.type)}
-            style={{ backgroundColor: colors.primary }}
-          />
-          <View style={styles.cardInfo}>
-            <Title>{item.name}</Title>
-            <Text style={styles.subText}>{item.type.toUpperCase()}</Text>
-            {item.description ? (
-              <Text style={styles.desc} numberOfLines={2}>
-                {item.description}
-              </Text>
-            ) : null}
-          </View>
-          <IconButton
-            icon={isFavorite ? "heart" : "heart-outline"}
-            iconColor={isFavorite ? colors.error : colors.onSurface}
-            size={24}
-            onPress={() => toggleFavorite(item._id)}
-          />
-        </Card.Content>
-      </Card>
-    );
-  };
+  const renderItem = ({ item }: { item: ContentItem }) => (
+    <Card
+      style={styles.card}
+      onPress={() => handleItemPress(item)}
+      mode="elevated"
+    >
+      <Card.Content style={styles.cardContent}>
+        <Avatar.Icon
+          size={48}
+          icon={getItemIcon(item.type)}
+          style={{ backgroundColor: colors.primary }}
+        />
+        <View style={styles.cardInfo}>
+          <Title>{item.name}</Title>
+          <Text style={styles.subText}>{item.type.toUpperCase()}</Text>
+          {item.description ? (
+            <Text style={styles.desc} numberOfLines={2}>
+              {item.description}
+            </Text>
+          ) : null}
+        </View>
+        <IconButton
+          icon="heart"
+          iconColor={colors.error}
+          size={24}
+          onPress={() => toggleFavorite(item._id)}
+        />
+      </Card.Content>
+    </Card>
+  );
 
   if (isLoading) {
     return (
@@ -152,21 +142,6 @@ const ItemsScreen = () => {
         type="card"
         backgroundColor={colors.surface}
       />
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.centerContainer}>
-        <Title style={{ marginBottom: 12 }}>Failed to load items</Title>
-        <Button
-          mode="contained-tonal"
-          icon="reload"
-          onPress={() => loadItems()}
-        >
-          Try Again
-        </Button>
-      </View>
     );
   }
 
@@ -180,14 +155,22 @@ const ItemsScreen = () => {
         keyExtractor={(item) => item._id}
         ListHeaderComponent={
           <View style={styles.header}>
-            <Title style={styles.headerTitle}>{subcategoryName}</Title>
+            <Title style={styles.headerTitle}>Favorites</Title>
             <Text style={styles.headerSubtitle}>
-              Choose an item to start learning
+              Your saved items for quick access
             </Text>
             <Divider style={{ marginTop: 12 }} />
           </View>
         }
         contentContainerStyle={styles.listContent}
+        ListEmptyComponent={
+          <View style={styles.centerContainer}>
+            <Title>No favorite items yet</Title>
+            <Text style={{ textAlign: "center" }}>
+              Add items to your favorites to see them here.
+            </Text>
+          </View>
+        }
       />
     </SafeAreaView>
   );
@@ -242,7 +225,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+    textAlign: "center",
   },
 });
 
-export default ItemsScreen;
+export default FavoritesScreen;
