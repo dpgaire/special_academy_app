@@ -1,6 +1,7 @@
 import { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { navigate } from './NavigationService';
 
 let isRefreshing = false;
 let failedQueue: Array<{ resolve: (token: string) => void; reject: (error: any) => void }> = [];
@@ -69,6 +70,7 @@ export const createTokenInterceptor = (axiosInstance: AxiosInstance) => {
           processQueue(refreshError, null);
           await AsyncStorage.removeItem('authTokens');
           await AsyncStorage.removeItem('user');
+          navigate('Login');
           return Promise.reject(refreshError);
         } finally {
           isRefreshing = false;
