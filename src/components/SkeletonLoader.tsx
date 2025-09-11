@@ -13,8 +13,8 @@ const SkeletonLoader = ({
 }) => {
   const { colors } = useTheme();
 
-  const renderItem = () => (
-    <View style={[styles.card, { backgroundColor: backgroundColor || colors.surface }]}>
+  const renderItem = (index:number) => (
+    <View key={index} style={[styles.card, { backgroundColor: backgroundColor || colors.surface }]}>
       <View style={styles.cardContent}>
         <View style={[styles.avatar, { backgroundColor: foregroundColor || colors.surfaceVariant }]} />
         <View style={styles.textContainer}>
@@ -33,14 +33,14 @@ const SkeletonLoader = ({
           <Animated.View style={[styles.title, { width: "40%", backgroundColor: foregroundColor || colors.surfaceVariant }]} />
           <Animated.View style={[styles.subtitle, { width: "60%", backgroundColor: foregroundColor || colors.surfaceVariant }]} />
         </View>
-        {[...Array(5)].map((_, index) => renderItem())}
+        {[...Array(5)].map((_, index) => renderItem(index))}
       </View>
     );
   }
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {[...Array(5)].map((_, index) => renderItem())}
+      {[...Array(5)].map((_, index) => renderItem(index))}
     </View>
   );
 };
