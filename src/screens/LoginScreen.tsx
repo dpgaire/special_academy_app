@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, StyleSheet, KeyboardAvoidingView,Platform,ScrollView } from 'react-native';
+import { SafeAreaView, View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { TextInput, Button, Text, Title, useTheme } from 'react-native-paper';
 import { useAuth } from '../contexts/AuthContext';
 import { useSnackbar } from '../contexts/SnackbarContext';
@@ -9,7 +9,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const { login } = useAuth();
   const { showSnackbar } = useSnackbar();
   const { colors } = useTheme();
@@ -30,71 +30,79 @@ const LoginScreen = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-     <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView contentContainerStyle={styles.container}>
+          <View style={styles.content}>
+            
+            <Title style={styles.title}>Special Academy</Title>
+            <Text style={styles.subtitle}>Welcome back 👋</Text>
 
-
-    <ScrollView 
-      contentContainerStyle={[styles.container]}>
-      <View style={styles.content}>
-        <Title style={styles.title}>Welcome! Special Academy</Title>
-        
-        <TextInput
-          label="Email"
-          value={email}
-          onChangeText={setEmail}
-          mode="outlined"
-          autoCapitalize="none"
-          keyboardType="email-address"
-          style={styles.input}
-          disabled={isLoading}
-        />
-        
-        <TextInput
-          label="Password"
-          value={password}
-          onChangeText={setPassword}
-          mode="outlined"
-          secureTextEntry={!showPassword}
-          right={
-            <TextInput.Icon 
-              icon={showPassword ? "eye-off" : "eye"} 
-              onPress={() => setShowPassword(!showPassword)}
+            <TextInput
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              mode="outlined"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              style={styles.input}
+              disabled={isLoading}
+              theme={{ colors: { text: "#fff", placeholder: "#aaa" } }}
             />
-          }
-          style={styles.input}
-          disabled={isLoading}
-        />
-        
-        <Button
-          mode="contained"
-          onPress={handleLogin}
-          loading={isLoading}
-          disabled={isLoading}
-          style={styles.button}
-          contentStyle={styles.buttonContent}
-        >
-          Login
-        </Button>
-        
-        <Text style={styles.footerText}>
-          Don't have an account? Contact your administrator.
-        </Text>
-      </View>
-    </ScrollView>
-    </KeyboardAvoidingView>
+
+            <TextInput
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              mode="outlined"
+              secureTextEntry={!showPassword}
+              right={
+                <TextInput.Icon
+                  icon={showPassword ? "eye-off" : "eye"}
+                  onPress={() => setShowPassword(!showPassword)}
+                  color="#fff"
+                />
+              }
+              style={styles.input}
+              disabled={isLoading}
+              theme={{ colors: { text: "#fff", placeholder: "#aaa" } }}
+            />
+
+            <Button
+              mode="contained"
+              onPress={handleLogin}
+              loading={isLoading}
+              disabled={isLoading}
+              style={styles.button}
+              contentStyle={styles.buttonContent}
+              labelStyle={styles.buttonLabel}
+            >
+              Login
+            </Button>
+
+            <Text style={styles.footerText}>
+              Don’t have an account? Contact your administrator.
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#000", // black background for premium look
+  },
   container: {
-    flexGrow: 1,
+    flexGrow: 3/4,
     justifyContent: 'center',
-    padding: 20,
+    alignItems: 'flex-start',
+    padding:24,
   },
   content: {
     maxWidth: 400,
@@ -103,25 +111,41 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    marginBottom: 30,
-    fontSize: 24,
+    marginBottom: 8,
+    fontSize: 28,
+    fontWeight: '700',
+    color: "#fff",
+  },
+  subtitle: {
+    textAlign: 'center',
+    marginBottom: 32,
+    fontSize: 16,
+    color: "#ccc",
   },
   input: {
-    marginBottom: 16,
+    marginBottom: 20,
+    backgroundColor: "#111", // subtle contrast against black
   },
   button: {
-    marginTop: 8,
-    marginBottom: 16,
-    paddingVertical:2,
+    marginTop: 12,
+    marginBottom: 24,
+    borderRadius: 10,
+    backgroundColor: "#fff", // white button
   },
   buttonContent: {
-    paddingVertical: 4,
+    paddingVertical: 6,
+  },
+  buttonLabel: {
+    color: "#000", // black text on white button
+    fontWeight: '600',
+    fontSize: 16,
   },
   footerText: {
     textAlign: 'center',
-    opacity: 0.7,
+    color: "#888",
+    fontSize: 14,
+    lineHeight: 20,
   },
 });
 
 export default LoginScreen;
-

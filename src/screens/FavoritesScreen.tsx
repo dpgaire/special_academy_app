@@ -4,7 +4,7 @@ import {
   FlatList,
   View,
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Card,
   Title,
@@ -23,17 +23,18 @@ import { ContentItem } from "../types";
 import SkeletonLoader from "../components/SkeletonLoader";
 import { useSnackbar } from "../contexts/SnackbarContext";
 
-type RootStackParamList = {
-  Favorites: undefined;
+type FavoritesStackParamList = {
+  FavoritesList: undefined;
   ContentWebView: { contentUrl: string; name: string };
 };
 
 const FavoritesScreen = () => {
   const [items, setItems] = useState<ContentItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    useNavigation<NativeStackNavigationProp<FavoritesStackParamList>>();
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
 
@@ -58,6 +59,7 @@ const FavoritesScreen = () => {
       }
     } catch (err: any) {
       showSnackbar("Failed to load favorite items");
+      setError(err.message || "Failed to load items");
       setItems([]);
     } finally {
       setIsLoading(false);
@@ -113,12 +115,13 @@ const FavoritesScreen = () => {
     >
       <Card.Content style={styles.cardContent}>
         <Avatar.Icon
-          size={48}
+          size={50}
           icon={getItemIcon(item.type)}
           style={{ backgroundColor: colors.primary }}
+          color={colors.onPrimary}
         />
         <View style={styles.cardInfo}>
-          <Title>{item.name}</Title>
+          <Title style={styles.itemTitle}>{item.name}</Title>
           <Text style={styles.subText}>{item.type.toUpperCase()}</Text>
           {item.description ? (
             <Text style={styles.desc} numberOfLines={2}>
@@ -129,7 +132,7 @@ const FavoritesScreen = () => {
         <IconButton
           icon="heart"
           iconColor={colors.error}
-          size={24}
+          size={26}
           onPress={() => toggleFavorite(item._id)}
         />
       </Card.Content>
@@ -138,10 +141,22 @@ const FavoritesScreen = () => {
 
   if (isLoading) {
     return (
-      <SkeletonLoader
-        type="card"
-        backgroundColor={colors.surface}
-      />
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
+        <SkeletonLoader type="card" backgroundColor={colors.surface} />
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centerContainer}>
+        <Title style={{ marginBottom: 12 }}>Failed to load favorite items</Title>
+        <Button mode="contained-tonal" icon="reload" onPress={loadItems}>
+          Try Again
+        </Button>
+      </View>
     );
   }
 
@@ -155,7 +170,7 @@ const FavoritesScreen = () => {
         keyExtractor={(item) => item._id}
         ListHeaderComponent={
           <View style={styles.header}>
-            <Title style={styles.headerTitle}>Favorites</Title>
+            <Title style={styles.headerTitle}>Favorites ❤️</Title>
             <Text style={styles.headerSubtitle}>
               Your saved items for quick access
             </Text>
@@ -165,9 +180,9 @@ const FavoritesScreen = () => {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View style={styles.centerContainer}>
-            <Title>No favorite items yet</Title>
-            <Text style={{ textAlign: "center" }}>
-              Add items to your favorites to see them here.
+            <Title style={{ marginBottom: 6 }}>No favorite items yet</Title>
+            <Text style={{ textAlign: "center", opacity: 0.7 }}>
+              Add items to your favorites and they’ll appear here.
             </Text>
           </View>
         }
@@ -179,18 +194,20 @@ const FavoritesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#000",
   },
   header: {
     marginBottom: 20,
     paddingHorizontal: 16,
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "700",
+    color: "#fff",
   },
   headerSubtitle: {
     fontSize: 14,
-    opacity: 0.7,
+    color: "#bbb",
     marginTop: 4,
   },
   listContent: {
@@ -198,26 +215,32 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 16,
-    borderRadius: 16,
+    borderRadius: 18,
+    backgroundColor: "#121212", // dark card
+    elevation: 4,
   },
   cardContent: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     padding: 16,
   },
   cardInfo: {
     flex: 1,
     marginLeft: 16,
   },
+  itemTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#fff",
+  },
   subText: {
     fontSize: 13,
-    opacity: 0.6,
+    color: "#999",
     marginTop: 2,
   },
   desc: {
     fontSize: 12,
-    opacity: 0.7,
+    color: "#aaa",
     marginTop: 4,
   },
   centerContainer: {
@@ -225,8 +248,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    textAlign: "center",
   },
 });
+
 
 export default FavoritesScreen;

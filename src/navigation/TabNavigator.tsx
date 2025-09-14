@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "react-native-paper";
 import HomeNavigator from "./HomeNavigator";
-import FavoritesScreen from "../screens/FavoritesScreen";
+import FavoritesNavigator from "./FavoritesNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -33,7 +33,7 @@ const TabNavigator = () => {
       })}
     >
       <Tab.Screen name="Home" component={HomeNavigator} />
-      <Tab.Screen name="Favorites" component={FavoritesScreen} />
+      <Tab.Screen name="Favorites" component={FavoritesNavigator} />
     </Tab.Navigator>
   );
 };

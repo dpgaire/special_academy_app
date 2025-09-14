@@ -4,7 +4,6 @@ import {
   StyleSheet,
   FlatList,
   View,
-  TouchableOpacity,
 } from "react-native";
 import {
   Card,
@@ -23,7 +22,6 @@ import { api } from "../services/api";
 import { ContentItem } from "../types";
 import SkeletonLoader from "../components/SkeletonLoader";
 import { useSnackbar } from "../contexts/SnackbarContext";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type RootStackParamList = {
   Items: { subcategoryId: string; subcategoryName: string };
@@ -122,13 +120,13 @@ const ItemsScreen = () => {
       >
         <Card.Content style={styles.cardContent}>
           <Avatar.Icon
-            size={48}
+            size={50}
             icon={getItemIcon(item.type)}
             style={{ backgroundColor: colors.primary }}
+            color={colors.onPrimary}
           />
           <View style={styles.cardInfo}>
-            <Title>{item.name}</Title>
-            <Text style={styles.subText}>{item.type.toUpperCase()}</Text>
+            <Title style={styles.itemTitle}>{item.name}</Title>
             {item.description ? (
               <Text style={styles.desc} numberOfLines={2}>
                 {item.description}
@@ -137,7 +135,7 @@ const ItemsScreen = () => {
           </View>
           <IconButton
             icon={isFavorite ? "heart" : "heart-outline"}
-            iconColor={isFavorite ? colors.error : colors.onSurface}
+            iconColor={isFavorite ? colors.error : colors.outline}
             size={24}
             onPress={() => toggleFavorite(item._id)}
           />
@@ -148,10 +146,7 @@ const ItemsScreen = () => {
 
   if (isLoading) {
     return (
-      <SkeletonLoader
-        type="card"
-        backgroundColor={colors.surface}
-      />
+      <SkeletonLoader type="card" backgroundColor={colors.surface} />
     );
   }
 
@@ -159,13 +154,20 @@ const ItemsScreen = () => {
     return (
       <View style={styles.centerContainer}>
         <Title style={{ marginBottom: 12 }}>Failed to load items</Title>
-        <Button
-          mode="contained-tonal"
-          icon="reload"
-          onPress={() => loadItems()}
-        >
+        <Button mode="contained-tonal" icon="reload" onPress={loadItems}>
           Try Again
         </Button>
+      </View>
+    );
+  }
+
+  if (!items.length) {
+    return (
+      <View style={styles.centerContainer}>
+        <Title>No items found</Title>
+        <Text style={{ marginTop: 6, opacity: 0.6 }}>
+          Please check back later
+        </Text>
       </View>
     );
   }
@@ -196,18 +198,20 @@ const ItemsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#000", // black background
   },
   header: {
     marginBottom: 20,
     paddingHorizontal: 16,
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "700",
+    color: "#fff", // white title
   },
   headerSubtitle: {
     fontSize: 14,
-    opacity: 0.7,
+    color: "#bbb", // muted gray
     marginTop: 4,
   },
   listContent: {
@@ -215,7 +219,9 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 16,
-    borderRadius: 16,
+    borderRadius: 18,
+    backgroundColor: "#121212", // dark card
+    elevation: 4,
   },
   cardContent: {
     flexDirection: "row",
@@ -227,14 +233,19 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 16,
   },
+  itemTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#fff", // white title
+  },
   subText: {
     fontSize: 13,
-    opacity: 0.6,
+    color: "#999", // soft gray
     marginTop: 2,
   },
   desc: {
     fontSize: 12,
-    opacity: 0.7,
+    color: "#aaa", // slightly lighter gray
     marginTop: 4,
   },
   centerContainer: {
@@ -244,5 +255,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
+
 
 export default ItemsScreen;

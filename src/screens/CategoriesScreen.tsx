@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView,StyleSheet, FlatList, View } from "react-native";
+import { SafeAreaView, StyleSheet, FlatList, View } from "react-native";
 import {
   Card,
   Title,
   Text,
-  useTheme,
   Button,
   Avatar,
 } from "react-native-paper";
@@ -21,7 +20,6 @@ const CategoriesScreen = () => {
   const [error, setError] = useState<string | null>(null);
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
-  const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
 
   const loadCategories = async () => {
@@ -59,16 +57,17 @@ const CategoriesScreen = () => {
     >
       <Card.Content style={styles.cardContent}>
         <Avatar.Text
-          size={48}
+          size={54}
           label={item.name
             ?.split(" ")
             .map((w) => w[0])
             .join("")
             .toUpperCase()}
-          style={{ backgroundColor: colors.primary }}
+          style={styles.avatar}
+          labelStyle={{ fontWeight: "700", fontSize: 20 }}
         />
         <View style={styles.cardInfo}>
-          <Title>{item.name}</Title>
+          <Title style={styles.cardTitle}>{item.name}</Title>
           <Text style={styles.subText}>{item.description}</Text>
         </View>
       </Card.Content>
@@ -76,22 +75,21 @@ const CategoriesScreen = () => {
   );
 
   if (isLoading) {
-    return (
-      <SkeletonLoader
-        type="card"
-        backgroundColor={colors.surface}
-      />
-    );
+    return <SkeletonLoader type="card" backgroundColor="#111" />;
   }
 
   if (error) {
     return (
       <View style={styles.centerContainer}>
-        <Title style={{ marginBottom: 12 }}>Failed to load categories</Title>
+        <Title style={{ marginBottom: 12, color: "#fff" }}>
+          Failed to load categories
+        </Title>
         <Button
-          mode="contained-tonal"
+          mode="contained"
           icon="reload"
           onPress={() => loadCategories()}
+          style={styles.retryButton}
+          labelStyle={{ color: "#000", fontWeight: "600" }}
         >
           Try Again
         </Button>
@@ -100,7 +98,7 @@ const CategoriesScreen = () => {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={categories}
         renderItem={renderCategoryItem}
@@ -122,44 +120,69 @@ const CategoriesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#000", // premium black background
   },
   header: {
-    marginBottom: 20,
-    paddingHorizontal: 16,
+    marginBottom: 24,
+    paddingHorizontal: 20,
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: "700",
+    color: "#fff",
+    textAlign: "left",
   },
   headerSubtitle: {
-    fontSize: 14,
-    opacity: 0.7,
-    marginTop: 4,
+    fontSize: 15,
+    color: "#bbb",
+    marginTop: 6,
+    textAlign: "left",
   },
   listContent: {
     padding: 16,
   },
   card: {
-    marginBottom: 16,
-    borderRadius: 16,
+    marginBottom: 18,
+    borderRadius: 18,
+    backgroundColor: "#111", // deep gray for contrast
+    shadowColor: "#fff",
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 4,
   },
   cardContent: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
+    gap: 18,
+    paddingVertical: 10,
+  },
+  avatar: {
+    backgroundColor: "#fff", // white for premium contrast
   },
   cardInfo: {
     flex: 1,
   },
+  cardTitle: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
+  },
   subText: {
     fontSize: 13,
-    opacity: 0.6,
+    color: "#aaa",
+    marginTop: 2,
   },
   centerContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+    backgroundColor: "#000",
+  },
+  retryButton: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    marginTop: 8,
   },
 });
 
